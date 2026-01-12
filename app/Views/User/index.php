@@ -80,9 +80,9 @@
     $(document).ready(function () {
         var table = $('#userTable').DataTable({
             "processing": true,
-            "serverSide": false, // Set true jika data ribuan
+            "serverSide": false,
             "ajax": {
-                "url": "<?= base_url('user/data') ?>", // Pastikan route ini ada di Routes.php
+                "url": "<?= base_url('user/data') ?>",
                 "type": "GET",
                 "dataSrc": "data"
             },
@@ -90,7 +90,7 @@
                 { "data": "name" },
                 { "data": "email" },
                 { 
-                    "data": "role_name", // Pastikan controller melakukan JOIN ke tabel roles
+                    "data": "role_name",
                     "render": function(data) {
                         return `<span class="badge badge-info">${data}</span>`;
                     }
@@ -110,14 +110,13 @@
                 }
             ]
         });
-        // 1. Ambil data saat tombol Edit diklik
+
         $('#userTable').on('click', '.btn-edit', function () {
             const id = $(this).data('id');
             $.ajax({
                 url: "<?= base_url('user/edit') ?>/" + id,
                 type: "GET",
                 success: function (res) {
-                    // res.user dan res.role_id didapat dari Controller
                     $('#edit_id').val(res.user.id);
                     $('#edit_name').val(res.user.name);
                     $('#edit_email').val(res.user.email);
@@ -128,7 +127,6 @@
             });
         });
 
-        // 2. Kirim data update
         $('#formEdit').on('submit', function (e) {
             e.preventDefault();
             const id = $('#edit_id').val();
@@ -139,7 +137,7 @@
                 success: function (response) {
                     alert(response.message);
                     $('#modalEdit').modal('hide');
-                    $('#userTable').DataTable().ajax.reload(); // Reload tabel otomatis
+                    $('#userTable').DataTable().ajax.reload();
                 },
                 error: function () {
                     alert("Gagal mengupdate data user");

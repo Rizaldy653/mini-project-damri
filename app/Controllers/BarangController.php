@@ -18,6 +18,8 @@ class BarangController extends BaseController
     public function index()
     {
         return view('barang/index');
+        // $data['barang'] = $this->barang->findAll();
+        // return view('barang/index', $data);
     }
 
     public function getData()
@@ -52,10 +54,14 @@ class BarangController extends BaseController
             ]);
         }
 
-        $this->barang->insert($this->request->getPost());
+        $this->barang->insert([
+            'nama_barang' => $this->request->getPost('nama_barang'),
+            'harga'       => $this->request->getPost('harga'),
+            'stok'        => $this->request->getPost('stok')
+        ]);
 
         return $this->response->setJSON([
-            'status' => true,
+            'status'  => true,
             'message' => 'Barang berhasil ditambahkan'
         ]);
     }

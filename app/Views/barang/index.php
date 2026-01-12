@@ -6,7 +6,12 @@
 
 <?= $this->section('content') ?>
 
-<h1 class="h3 mb-2 text-gray-800">Data Barang</h1>
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Data Barang</h1>
+    <button class="btn btn-primary btn-sm shadow-sm" data-toggle="modal" data-target="#modalBarang">
+        <i class="fas fa-user-plus fa-sm text-white-50"></i> Tambah Barang
+    </button>
+</div>
 
 <div class="card shadow mb-4">
     <div class="card-body">
@@ -23,6 +28,51 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalBarang" tabindex="-1" role="dialog" aria-labelledby="modalBarangLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalBarangLabel">Tambah Barang Baru</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+
+            <form id="formTambahBarang">
+                <?= csrf_field() ?>
+
+                <div class="modal-body">
+
+                    <div id="errorBarang" class="alert alert-danger d-none"></div>
+
+                    <div class="form-group">
+                        <label>Nama Barang</label>
+                        <input type="text" name="nama_barang" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Harga</label>
+                        <input type="number" name="harga" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Stok</label>
+                        <input type="number" name="stok" class="form-control" required>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
+                    <button class="btn btn-primary" type="submit">Simpan Barang</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
@@ -31,17 +81,16 @@
 <script>
     $(document).ready(function () {
         console.log("Script DataTables Berjalan...");
-        // Inisialisasi DataTable
         var table = $('#dataTable').DataTable({
             "processing": true,
-            "serverSide": false, // Karena Anda menggunakan findAll()
+            "serverSide": false,
             "ajax": {
                 "url": "<?= base_url('barang/data') ?>",
                 "type": "GET",
-                "dataSrc": "data", // Ini HARUS sama dengan key JSON: { "data": [...] }
+                "dataSrc": "data",
                 "error": function (xhr, error, thrown) {
                     console.error("XHR Response: " + xhr.responseText);
-                    alert("Gagal memuat data. Cek Console (F12) untuk detail.");
+                    alert("Gagal memuat data.");
                 }
             },
             "columns": [
@@ -87,7 +136,7 @@
                 success: function (response) {
                     alert(response.message);
                     $('#modalEdit').modal('hide');
-                    $('#dataTable').DataTable().ajax.reload(); // Reload tabel tanpa refresh halaman
+                    $('#dataTable').DataTable().ajax.reload();
                 },
                 error: function () {
                     alert("Gagal mengupdate data");
@@ -97,17 +146,15 @@
 
         $('#dataTable').on('click', '.btn-delete', function () {
             const id = $(this).data('id');
-            
-            // Konfirmasi sederhana dengan browser confirm
+
             if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
                 $.ajax({
                     url: "<?= base_url('barang/delete') ?>/" + id,
-                    type: "POST", // Sesuai dengan route yang Anda buat
+                    type: "POST",
                     dataType: "JSON",
                     success: function (response) {
                         if (response.status) {
                             alert(response.message);
-                            // Reload tabel otomatis tanpa refresh halaman
                             $('#dataTable').DataTable().ajax.reload();
                         } else {
                             alert("Gagal menghapus: " + response.message);
@@ -119,6 +166,47 @@
                     }
                 });
             }
+        });
+
+        $('#formTambahBarang').on('submit', function (e) {
+            e.preventDefault();
+
+            $('#errorBarang').addClass('d-none').html('');
+
+            $.ajax({
+                url: "<?= base_url('barang/store') ?>",
+                type: "POST",
+                data: $(this).serialize(),
+                dataType: "JSON",
+                success: function (res) {
+
+                    if (res.status) {
+                        // sukses
+                        $('#modalBarang').modal('hide');
+                        $('#formTambahBarang')[0].reset();
+
+                        // reload DataTable
+                        $('#dataTable').DataTable().ajax.reload(null, false);
+
+                        alert(res.message);
+                    } else {
+                        // validasi error
+                        let errors = '<ul>';
+                        $.each(res.errors, function (key, value) {
+                            errors += `<li>${value}</li>`;
+                        });
+                        errors += '</ul>';
+
+                        $('#errorBarang')
+                            .removeClass('d-none')
+                            .html(errors);
+                    }
+                },
+                error: function (xhr) {
+                    alert('Terjadi kesalahan pada server');
+                    console.error(xhr.responseText);
+                }
+            });
         });
     });
 </script>
