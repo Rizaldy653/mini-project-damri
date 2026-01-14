@@ -144,6 +144,36 @@
                 }
             });
         });
+
+        $('#userTable').on('click', '.btn-delete', function () {
+            const id = $(this).data('id');
+
+            if (confirm("Apakah Anda yakin ingin menghapus user ini?")) {
+                $.ajax({
+                    url: "<?= base_url('user/delete') ?>/" + id,
+                    type: "POST",
+                    dataType: "JSON",
+                    success: function (response) {
+                        if (response.status) {
+                            alert(response.message);
+                            $('#userTable').DataTable().ajax.reload(null, false);
+                        } else {
+                            alert("Gagal menghapus: " + response.message);
+                        }
+                    },
+                    // error: function (xhr) {
+                    //     console.error(xhr.responseText);
+                    //     alert("Terjadi kesalahan pada server");
+                    // }
+                    error: function (xhr) {
+                        console.log(xhr.status);
+                        console.log(xhr.responseText);
+                        alert("Delete gagal, cek console");
+                    }
+                });
+            }
+        });
+
     });
 </script>
 

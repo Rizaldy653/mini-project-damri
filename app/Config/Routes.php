@@ -30,5 +30,6 @@ $routes->group('user', ['filter' => 'permission:manage_users'], function($routes
     $routes->post('store', 'UserController::store');
     $routes->get('edit/(:num)', 'UserController::edit/$1');
     $routes->post('update/(:num)', 'UserController::update/$1');
+    $routes->post('delete/(:num)', 'UserController::delete/$1');
 });
 

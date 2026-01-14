@@ -11,7 +11,8 @@ class Barang extends Model
     protected $allowedFields = [
         'nama_barang', 
         'harga', 
-        'stok'
+        'stok',
+        'status'
     ];
 
     protected $useTimestamps = true;

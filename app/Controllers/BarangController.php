@@ -24,9 +24,14 @@ class BarangController extends BaseController
 
     public function getData()
     {
-        $data = $this->barang->findAll();
+        $data = $this->barang->where('status', '1')->findAll();
 
         // dd($data);
+        log_message('error', json_encode($data));
+
+        // if ($data['status'] == null) {
+        //     $data['status'] = '1';
+        // }
 
         return $this->response->setJSON([
             'data' => $data
@@ -44,7 +49,8 @@ class BarangController extends BaseController
         $rules = [
             'nama_barang' => 'required|min_length[3]',
             'harga'       => 'required|numeric',
-            'stok'        => 'required|integer'
+            'stok'        => 'required|integer',
+            'status'        => 'integer[1,2]'
         ];
 
         if (! $this->validate($rules)) {
@@ -57,7 +63,8 @@ class BarangController extends BaseController
         $this->barang->insert([
             'nama_barang' => $this->request->getPost('nama_barang'),
             'harga'       => $this->request->getPost('harga'),
-            'stok'        => $this->request->getPost('stok')
+            'stok'        => $this->request->getPost('stok'),
+            'status'      => $this->request->getPost('status')
         ]);
 
         return $this->response->setJSON([
@@ -88,7 +95,8 @@ class BarangController extends BaseController
         $this->barang->update($id, [
             'nama_barang' => $this->request->getPost('nama_barang'),
             'harga' => $this->request->getPost('harga'),
-            'stok' => $this->request->getPost('stok')
+            'stok' => $this->request->getPost('stok'),
+            'stok' => $this->request->getPost('status')
         ]);
 
         return $this->response->setJSON([

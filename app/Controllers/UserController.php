@@ -153,6 +153,8 @@ class UserController extends BaseController
 
     public function delete($id)
     {
+        log_message('error', 'DELETE USER ID: ' . $id);
+        
         $this->db->transStart();
 
         $this->db->table('user_roles')->where('user_id', $id)->delete();

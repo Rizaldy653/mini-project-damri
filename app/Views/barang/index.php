@@ -61,6 +61,11 @@
                         <input type="number" name="stok" class="form-control" required>
                     </div>
 
+                    <div class="form-group">
+                        <label>Status</label>
+                        <input type="number" name="status" class="form-control" required>
+                    </div>
+
                 </div>
 
                 <div class="modal-footer">
@@ -181,16 +186,13 @@
                 success: function (res) {
 
                     if (res.status) {
-                        // sukses
                         $('#modalBarang').modal('hide');
                         $('#formTambahBarang')[0].reset();
 
-                        // reload DataTable
                         $('#dataTable').DataTable().ajax.reload(null, false);
 
                         alert(res.message);
                     } else {
-                        // validasi error
                         let errors = '<ul>';
                         $.each(res.errors, function (key, value) {
                             errors += `<li>${value}</li>`;
